@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
-const SECRET: &str = "21ae06b4b673da8996848710ecf3ef0c";
+const SECRET: &str = "5Up3R_53CR37_K3Y_xD_6cca116e6c91df3eec4d2d703ffafe88";
 
 #[get("/")]
 fn index(cookies: &CookieJar<'_>) -> Result<RawHtml<String>, Status> {
@@ -50,7 +50,7 @@ async fn view(name: Option<String>) -> Result<NamedFile, Status> {
     }
 }
 
-#[get("/c1edb8d965eac493eb139019afb4569caaa6e12167168b48380fa437dfa6cb2f69fae7d08fc13af6262d5ac137d4113246923eef5940bef74321e0ee2860343e")]
+#[get("/1_H1d3_mY_53cr37_h3R3")]
 async fn flag(cookies: &CookieJar<'_>) -> Result<String, Status> {
     let admin = match cookies.get("token") {
         Some(token) => match verifyjwt(token.value()) {
