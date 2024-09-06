@@ -2,7 +2,7 @@
 extern crate rocket;
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
-use rocket::fs::{relative, NamedFile};
+use rocket::fs::{relative, FileServer, NamedFile};
 use rocket::http::CookieJar;
 use rocket::http::Status;
 use rocket::response::content::RawHtml;
@@ -38,7 +38,7 @@ async fn view(name: Option<String>) -> Result<NamedFile, Status> {
             if name.contains("flag") {
                 Err(Status::Forbidden)
             } else {
-                let path = Path::new(relative!("file_gambar")).join(name);
+                let path = Path::new("static/file_gambar").join(name);
                 let file = NamedFile::open(path).await;
                 match file {
                     Ok(file) => Ok(file),
@@ -63,7 +63,7 @@ async fn flag(cookies: &CookieJar<'_>) -> Result<String, Status> {
         let info = "How do you find this page? Only admin can access this page.";
         return Ok(info.to_string());
     } else {
-        let path = Path::new(relative!("5cdf9be3326a66461fbfc32482bd3cceec83e01c02cb2a5f4e2554151e8ed64ea233f7fa4e74babd1d39b874f4b353adc3f8aa9ac2e1c4d393be7dddfd756a90")).join("flag.txt");
+        let path = Path::new(("static/5cdf9be3326a66461fbfc32482bd3cceec83e01c02cb2a5f4e2554151e8ed64ea233f7fa4e74babd1d39b874f4b353adc3f8aa9ac2e1c4d393be7dddfd756a90")).join("flag.txt");
         let file = fs::read_to_string(path);
         match file {
             Ok(file) => Ok(file),
@@ -107,4 +107,5 @@ fn rocket() -> _ {
         .mount("/", routes![index])
         .mount("/", routes![view])
         .mount("/", routes![flag])
+        .mount("/static", FileServer::from("/app/static"))
 }
