@@ -1,7 +1,7 @@
 FROM docker.io/rust:1-slim-bookworm AS build
 
 ## cargo package name: customize here or provide via --build-arg
-ARG pkg=meroket-app
+ARG pkg=meroket
 
 WORKDIR /build
 
