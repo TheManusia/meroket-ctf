@@ -1,8 +1,12 @@
 #[macro_use]
 extern crate rocket;
+extern crate log;
+extern crate fern;
+extern crate chrono;
+
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
-use rocket::fs::{relative, FileServer, NamedFile};
+use rocket::fs::{FileServer, NamedFile};
 use rocket::http::CookieJar;
 use rocket::http::Status;
 use rocket::response::content::RawHtml;
@@ -63,7 +67,7 @@ async fn flag(cookies: &CookieJar<'_>) -> Result<String, Status> {
         let info = "How do you find this page? Only admin can access this page.";
         return Ok(info.to_string());
     } else {
-        let path = Path::new(("static/5cdf9be3326a66461fbfc32482bd3cceec83e01c02cb2a5f4e2554151e8ed64ea233f7fa4e74babd1d39b874f4b353adc3f8aa9ac2e1c4d393be7dddfd756a90")).join("flag.txt");
+        let path = Path::new("static/5cdf9be3326a66461fbfc32482bd3cceec83e01c02cb2a5f4e2554151e8ed64ea233f7fa4e74babd1d39b874f4b353adc3f8aa9ac2e1c4d393be7dddfd756a90").join("flag.txt");
         let file = fs::read_to_string(path);
         match file {
             Ok(file) => Ok(file),
@@ -101,8 +105,26 @@ fn verifyjwt(token: &str) -> Result<bool, jwt::Error> {
     }
 }
 
+fn setup_logger() -> Result<(), fern::InitError> {
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Debug)
+        .chain(std::io::stdout())
+        .apply()?;
+    Ok(())
+}
+
 #[launch]
 fn rocket() -> _ {
+    setup_logger().expect("Failed to setup logger");
     rocket::build()
         .mount("/", routes![index])
         .mount("/", routes![view])
