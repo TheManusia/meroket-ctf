@@ -1,0 +1,7 @@
+version: '1'
+services:
+  chall:
+    build: .
+    ports:
+      - 8001:80
+    privileged: true
